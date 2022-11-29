@@ -122,13 +122,105 @@ const populateSelectMenu = (users) => {
 const getUsers = async () => {
   try {
     const response = await fetch("https://jsonplaceholder.typicode.com/users");
-    const userData = await response.json();
-    return userData;
+    const requestedUserData = await response.json();
+    return requestedUserData;
   } catch (error) {
     console.error(error.stack);
   }
 };
 
+const getUserPosts = async (userId) => {
+  if (!userId) {
+    return;
+  }
+  try {
+    const response = await fetch(
+      `https://jsonplaceholder.typicode.com/posts?userId=${userId}`
+    );
+    const requestedUserDataPost = await response.json();
+    return requestedUserDataPost;
+  } catch (error) {
+    console.error(error.stack);
+  }
+};
+
+const getUser = async (userId) => {
+  if (!userId) {
+    return;
+  }
+  try {
+    const response = await fetch(
+      `https://jsonplaceholder.typicode.com/users/${userId}`
+    );
+    const requestedUserData = await response.json();
+    return requestedUserData;
+  } catch (error) {
+    console.error(error.stack);
+  }
+};
+
+const getPostComments = async (postId) => {
+  if (!postId) {
+    return;
+  }
+  try {
+    const response = await fetch(
+      `https://jsonplaceholder.typicode.com/comments?postId=${postId}`
+    );
+    const requestedUserData = await response.json();
+    return requestedUserData;
+  } catch (error) {
+    console.error(error.stack);
+  }
+};
+
+const displayComments = async (postId) => {
+  if (!postId) {
+    return;
+  }
+  const section = document.createElement("section");
+  section.dataset.postId = postId;
+  section.setAttribute("postId", `${section.dataset.postId}`);
+  section.classList.add("comments", "hide");
+  const comments = await getPostComments(postId);
+  const fragment = createComments(comments);
+  section.append(fragment);
+  return section;
+};
+
+const createPosts = async (posts) => {
+  if (!posts) {
+    return;
+  }
+  const fragment = document.createDocumentFragment();
+  for (const post of posts) {
+    const article = document.createElement("article");
+    const h2 = createElemWithText("h2", post.title);
+    const paragraph = createElemWithText("p", post.body);
+    const paragraph2 = createElemWithText("p", `Post ID: ${post.id}`);
+    const author = await getUser(post.userId);
+    const paragraph3 = createElemWithText(
+      "p",
+      `Author: ${author.name} with ${author.company.name}`
+    );
+    const paragraph4 = createElemWithText("p", `${author.company.catchPhrase}`);
+    const button = createElemWithText("button", "Show Comments");
+    button.dataset.postId = post.id;
+    button.setAttribute("postId", `${button.dataset.postId}`);
+    const section = await displayComments(post.id);
+    article.append(
+      h2,
+      paragraph,
+      paragraph2,
+      paragraph3,
+      paragraph4,
+      button,
+      section
+    );
+    fragment.append(article);
+  }
+  return fragment;
+};
 const toggleComments = (event, postId) => {
   if (!event || !postId) {
     return;
