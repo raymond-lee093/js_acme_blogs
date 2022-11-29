@@ -286,3 +286,5 @@ const initApp = () => {
   const selectMenu = document.getElementById("#selectMenu");
   selectMenu.addEventListener("change", selectMenuChangeEventHandler(event));
 };
+
+document.addEventListener("DOMContentLoaded", (event) => initApp());
