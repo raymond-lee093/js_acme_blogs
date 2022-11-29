@@ -221,6 +221,22 @@ const createPosts = async (posts) => {
   }
   return fragment;
 };
+const displayPosts = async (posts) => {
+  const main = document.querySelector("main");
+  if (posts) {
+    element = await createPosts(posts);
+    main.append(element);
+    return element;
+  } else {
+    element = createElemWithText(
+      "p",
+      "Select an Employee to display their posts.",
+      "default-text"
+    );
+    main.append(element);
+    return element;
+  }
+};
 const toggleComments = (event, postId) => {
   if (!event || !postId) {
     return;
@@ -231,4 +247,42 @@ const toggleComments = (event, postId) => {
   const button = toggleCommentButton(postId);
   array.push(sectionElement, button);
   return array;
+};
+
+const refreshPosts = async (posts) => {
+  if (!posts) {
+    return;
+  }
+  const array = [];
+  const removeButtons = removeButtonListeners();
+  const main = deleteChildElements(document.querySelector("main"));
+  const fragment = await displayPosts(posts);
+  const addButtons = addButtonListeners();
+  array.push(removeButtons, main, fragment, addButtons);
+  return array;
+};
+
+const selectMenuChangeEventHandler = async (event) => {
+  if (!event) {
+    return;
+  }
+  const element = document.getElementById("selectMenu");
+  element.setAttribute("disabled", "");
+  const userId = event?.target?.value || 1;
+  const posts = await getUserPosts(userId);
+  const refreshPostsArray = await refreshPosts(posts);
+  element.removeAttribute("disabled");
+  return [userId, posts, refreshPostsArray];
+};
+
+const initPage = async () => {
+  const users = await getUsers();
+  const menu = populateSelectMenu(users);
+  return [users, menu];
+};
+
+const initApp = () => {
+  initPage();
+  const selectMenu = document.getElementById("#selectMenu");
+  selectMenu.addEventListener("change", selectMenuChangeEventHandler(event));
 };
