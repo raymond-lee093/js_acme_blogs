@@ -28,10 +28,9 @@ const toggleCommentSection = (postId) => {
   const commentSection = document.querySelector(
     `section[data-post-id="${postId}"]`
   );
-  if (commentSection === null) {
-    return null;
+  if (commentSection) {
+    commentSection.classList.toggle("hide");
   }
-  commentSection.classList.toggle("hide");
   return commentSection;
 };
 
@@ -223,7 +222,7 @@ const createPosts = async (posts) => {
 };
 const displayPosts = async (posts) => {
   const main = document.querySelector("main");
-  if (posts) {
+  if (posts != null) {
     element = await createPosts(posts);
     main.append(element);
     return element;
@@ -284,7 +283,9 @@ const initPage = async () => {
 const initApp = () => {
   initPage();
   const selectMenu = document.getElementById("#selectMenu");
-  selectMenu.addEventListener("change", selectMenuChangeEventHandler(event));
+  selectMenu.addEventListener("change", (event) => {
+    selectMenuChangeEventHandler();
+  });
 };
 
 document.addEventListener("DOMContentLoaded", (event) => initApp());
